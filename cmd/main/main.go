@@ -4,9 +4,9 @@ package main
 // @version 1.x
 // @description This is WhatsApp Multi-Device Implementation in Go REST API
 
-// @contact.name Dimas Restu Hidayanto
-// @contact.url https://github.com/dimaskiddo
-// @contact.email drh.dimasrestu@gmail.com
+// contact.name Dimas Restu Hidayanto
+// contact.url https://github.com/dimaskiddo
+// contact.email drh.dimasrestu@gmail.com
 
 // @securityDefinitions.basic BasicAuth
 
