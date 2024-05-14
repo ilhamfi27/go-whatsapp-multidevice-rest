@@ -1,8 +1,5 @@
 info:
-  contact:
-    email: drh.dimasrestu@gmail.com
-    name: Dimas Restu Hidayanto
-    url: https://github.com/dimaskiddo
+  contact: {}
   description: This is WhatsApp Multi-Device Implementation in Go REST API
   title: Go WhatsApp Multi-Device REST API
   version: 1.x
@@ -14,7 +11,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       summary: Show The Status of The Server
       tags:
       - Root
@@ -25,7 +22,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BasicAuth: []
       summary: Generate Authentication Token
@@ -38,7 +35,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Get Joined Groups Information
@@ -57,7 +54,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Join Group From Invitation Link
@@ -76,7 +73,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Leave Group By Group ID
@@ -101,7 +98,7 @@ paths:
       - text/html
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Generate QR Code for WhatsApp Multi-Device Login
@@ -116,7 +113,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Pair Phone for WhatsApp Multi-Device Login
@@ -129,7 +126,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Logout Device from WhatsApp Multi-Device
@@ -143,7 +140,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: msisdn
+        name: phone
         required: true
         type: string
       - description: Message ID
@@ -155,7 +152,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Delete Message
@@ -169,7 +166,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: msisdn
+        name: phone
         required: true
         type: string
       - description: Message ID
@@ -186,7 +183,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Update Message
@@ -200,7 +197,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: msisdn
+        name: phone
         required: true
         type: string
       - description: Message ID
@@ -217,7 +214,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: React Message
@@ -229,14 +226,14 @@ paths:
       parameters:
       - description: WhatsApp Personal ID to Check
         in: query
-        name: msisdn
+        name: phone
         required: true
         type: string
       produces:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Check If WhatsApp Personal ID is Registered
@@ -250,7 +247,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: msisdn
+        name: phone
         required: true
         type: string
       - description: Audio File
@@ -262,7 +259,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Send Audio Message
@@ -277,7 +274,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: msisdn
+        name: phone
         required: true
         type: string
       - description: Contact Name
@@ -294,7 +291,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Send Contact Message
@@ -309,7 +306,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: msisdn
+        name: phone
         required: true
         type: string
       - description: Document File
@@ -321,7 +318,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Send Document Message
@@ -335,7 +332,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: msisdn
+        name: phone
         required: true
         type: string
       - description: Caption Image Message
@@ -357,7 +354,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Send Image Message
@@ -371,7 +368,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: msisdn
+        name: phone
         required: true
         type: string
       - description: Link Caption
@@ -387,7 +384,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Send Link Message
@@ -402,7 +399,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: msisdn
+        name: phone
         required: true
         type: string
       - description: Location Latitude
@@ -419,7 +416,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Send Location Message
@@ -433,7 +430,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: msisdn
+        name: phone
         required: true
         type: string
       - description: Poll Question
@@ -455,7 +452,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Send Poll
@@ -470,7 +467,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: msisdn
+        name: phone
         required: true
         type: string
       - description: Sticker File
@@ -482,7 +479,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Send Sticker Message
@@ -496,7 +493,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: msisdn
+        name: phone
         required: true
         type: string
       - description: Text Message
@@ -508,7 +505,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Send Text Message
@@ -522,7 +519,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: msisdn
+        name: phone
         required: true
         type: string
       - description: Caption Video Message
@@ -544,7 +541,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       security:
       - BearerAuth: []
       summary: Send Video Message

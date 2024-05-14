@@ -161,16 +161,16 @@ func Logout(c echo.Context) error {
 // @Description Check WhatsApp Personal ID is Registered
 // @Tags        WhatsApp Information
 // @Produce     json
-// @Param       msisdn    query  string  true  "WhatsApp Personal ID to Check"
+// @Param       phone    query  string  true  "WhatsApp Personal ID to Check"
 // @Success     200
 // @Security    BearerAuth
 // @Router      /registered [get]
 func Registered(c echo.Context) error {
 	jid := jwtPayload(c).JID
-	remoteJID := strings.TrimSpace(c.QueryParam("msisdn"))
+	remoteJID := strings.TrimSpace(c.QueryParam("phone"))
 
 	if len(remoteJID) == 0 {
-		return router.ResponseInternalError(c, "Missing Query Value MSISDN")
+		return router.ResponseInternalError(c, "Missing Query Value phone")
 	}
 
 	err := pkgWhatsApp.WhatsAppCheckRegistered(jid, remoteJID)
@@ -263,7 +263,7 @@ func LeaveGroup(c echo.Context) error {
 // @Tags        WhatsApp Send Message
 // @Accept      multipart/form-data
 // @Produce     json
-// @Param       msisdn    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
+// @Param       phone    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
 // @Param       message   formData  string  true  "Text Message"
 // @Success     200
 // @Security    BearerAuth
@@ -273,11 +273,11 @@ func SendText(c echo.Context) error {
 	jid := jwtPayload(c).JID
 
 	var reqSendMessage typWhatsApp.RequestSendMessage
-	reqSendMessage.RJID = strings.TrimSpace(c.FormValue("msisdn"))
+	reqSendMessage.RJID = strings.TrimSpace(c.FormValue("phone"))
 	reqSendMessage.Message = strings.Replace(strings.TrimSpace(c.FormValue("message")), "\\n", "\n", -1)
 
 	if len(reqSendMessage.RJID) == 0 {
-		return router.ResponseBadRequest(c, "Missing Form Value MSISDN")
+		return router.ResponseBadRequest(c, "Missing Form Value phone")
 	}
 
 	if len(reqSendMessage.Message) == 0 {
@@ -299,7 +299,7 @@ func SendText(c echo.Context) error {
 // @Tags        WhatsApp Send Message
 // @Accept      multipart/form-data
 // @Produce     json
-// @Param       msisdn    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
+// @Param       phone    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
 // @Param       latitude  formData  number  true  "Location Latitude"
 // @Param       longitude formData  number  true  "Location Longitude"
 // @Success     200
@@ -310,7 +310,7 @@ func SendLocation(c echo.Context) error {
 	jid := jwtPayload(c).JID
 
 	var reqSendLocation typWhatsApp.RequestSendLocation
-	reqSendLocation.RJID = strings.TrimSpace(c.FormValue("msisdn"))
+	reqSendLocation.RJID = strings.TrimSpace(c.FormValue("phone"))
 
 	reqSendLocation.Latitude, err = strconv.ParseFloat(strings.TrimSpace(c.FormValue("latitude")), 64)
 	if err != nil {
@@ -323,7 +323,7 @@ func SendLocation(c echo.Context) error {
 	}
 
 	if len(reqSendLocation.RJID) == 0 {
-		return router.ResponseBadRequest(c, "Missing Form Value MSISDN")
+		return router.ResponseBadRequest(c, "Missing Form Value phone")
 	}
 
 	var resSendMessage typWhatsApp.ResponseSendMessage
@@ -341,7 +341,7 @@ func SendLocation(c echo.Context) error {
 // @Tags        WhatsApp Send Message
 // @Accept      multipart/form-data
 // @Produce     json
-// @Param       msisdn    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
+// @Param       phone    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
 // @Param       name      formData  string  true  "Contact Name"
 // @Param       phone     formData  string  true  "Contact Phone"
 // @Success     200
@@ -352,12 +352,12 @@ func SendContact(c echo.Context) error {
 	jid := jwtPayload(c).JID
 
 	var reqSendContact typWhatsApp.RequestSendContact
-	reqSendContact.RJID = strings.TrimSpace(c.FormValue("msisdn"))
+	reqSendContact.RJID = strings.TrimSpace(c.FormValue("phone"))
 	reqSendContact.Name = strings.TrimSpace(c.FormValue("name"))
 	reqSendContact.Phone = strings.TrimSpace(c.FormValue("phone"))
 
 	if len(reqSendContact.RJID) == 0 {
-		return router.ResponseBadRequest(c, "Missing Form Value MSISDN")
+		return router.ResponseBadRequest(c, "Missing Form Value phone")
 	}
 
 	if len(reqSendContact.Name) == 0 {
@@ -383,7 +383,7 @@ func SendContact(c echo.Context) error {
 // @Tags        WhatsApp Send Message
 // @Accept      multipart/form-data
 // @Produce     json
-// @Param       msisdn    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
+// @Param       phone    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
 // @Param       caption   formData  string  false "Link Caption"
 // @Param       url       formData  string  true  "Link URL"
 // @Success     200
@@ -394,12 +394,12 @@ func SendLink(c echo.Context) error {
 	jid := jwtPayload(c).JID
 
 	var reqSendLink typWhatsApp.RequestSendLink
-	reqSendLink.RJID = strings.TrimSpace(c.FormValue("msisdn"))
+	reqSendLink.RJID = strings.TrimSpace(c.FormValue("phone"))
 	reqSendLink.Caption = strings.TrimSpace(c.FormValue("caption"))
 	reqSendLink.URL = strings.TrimSpace(c.FormValue("url"))
 
 	if len(reqSendLink.RJID) == 0 {
-		return router.ResponseBadRequest(c, "Missing Form Value MSISDN")
+		return router.ResponseBadRequest(c, "Missing Form Value phone")
 	}
 
 	if len(reqSendLink.URL) == 0 {
@@ -421,7 +421,7 @@ func SendLink(c echo.Context) error {
 // @Tags        WhatsApp Send Message
 // @Accept      multipart/form-data
 // @Produce     json
-// @Param       msisdn    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
+// @Param       phone    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
 // @Param       document  formData  file    true  "Document File"
 // @Success     200
 // @Security    BearerAuth
@@ -436,7 +436,7 @@ func SendDocument(c echo.Context) error {
 // @Tags        WhatsApp Send Message
 // @Accept      multipart/form-data
 // @Produce     json
-// @Param       msisdn    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
+// @Param       phone    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
 // @Param       caption   formData  string  true  "Caption Image Message"
 // @Param       image     formData  file    true  "Image File"
 // @Param       viewonce  formData  bool    false "Is View Once"              default(false)
@@ -453,7 +453,7 @@ func SendImage(c echo.Context) error {
 // @Tags        WhatsApp Send Message
 // @Accept      multipart/form-data
 // @Produce     json
-// @Param       msisdn    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
+// @Param       phone    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
 // @Param       audio     formData  file    true  "Audio File"
 // @Success     200
 // @Security    BearerAuth
@@ -468,7 +468,7 @@ func SendAudio(c echo.Context) error {
 // @Tags        WhatsApp Send Message
 // @Accept      multipart/form-data
 // @Produce     json
-// @Param       msisdn    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
+// @Param       phone    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
 // @Param       caption   formData  string  true  "Caption Video Message"
 // @Param       video     formData  file    true  "Video File"
 // @Param       viewonce  formData  bool    false "Is View Once"              default(false)
@@ -485,7 +485,7 @@ func SendVideo(c echo.Context) error {
 // @Tags        WhatsApp Send Message
 // @Accept      multipart/form-data
 // @Produce     json
-// @Param       msisdn    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
+// @Param       phone    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
 // @Param       sticker   formData  file    true  "Sticker File"
 // @Success     200
 // @Security    BearerAuth
@@ -499,7 +499,7 @@ func sendMedia(c echo.Context, mediaType string) error {
 	jid := jwtPayload(c).JID
 
 	var reqSendMessage typWhatsApp.RequestSendMessage
-	reqSendMessage.RJID = strings.TrimSpace(c.FormValue("msisdn"))
+	reqSendMessage.RJID = strings.TrimSpace(c.FormValue("phone"))
 
 	// Read Uploaded File Based on Send Media Type
 	var fileStream multipart.File
@@ -539,7 +539,7 @@ func sendMedia(c echo.Context, mediaType string) error {
 
 	// Make Sure RJID is Filled
 	if len(reqSendMessage.RJID) == 0 {
-		return router.ResponseBadRequest(c, "Missing Form Value MSISDN")
+		return router.ResponseBadRequest(c, "Missing Form Value phone")
 	}
 
 	// Check if Media Type is "image" or "video"
@@ -603,7 +603,7 @@ func sendMedia(c echo.Context, mediaType string) error {
 // @Tags        WhatsApp Send Message
 // @Accept      multipart/form-data
 // @Produce     json
-// @Param       msisdn       formData  string  true  "Destination WhatsApp Personal ID or Group ID"
+// @Param       phone       formData  string  true  "Destination WhatsApp Personal ID or Group ID"
 // @Param       question     formData  string  true  "Poll Question"
 // @Param       options      formData  string  true  "Poll Options (Comma Seperated for New Options)"
 // @Param       multianswer  formData  bool    false "Is Multiple Answer"             default(false)
@@ -615,12 +615,12 @@ func SendPoll(c echo.Context) error {
 	jid := jwtPayload(c).JID
 
 	var reqSendPoll typWhatsApp.RequestSendPoll
-	reqSendPoll.RJID = strings.TrimSpace(c.FormValue("msisdn"))
+	reqSendPoll.RJID = strings.TrimSpace(c.FormValue("phone"))
 	reqSendPoll.Question = strings.TrimSpace(c.FormValue("question"))
 	reqSendPoll.Options = strings.TrimSpace(c.FormValue("options"))
 
 	if len(reqSendPoll.RJID) == 0 {
-		return router.ResponseBadRequest(c, "Missing Form Value MSISDN")
+		return router.ResponseBadRequest(c, "Missing Form Value phone")
 	}
 
 	if len(reqSendPoll.Question) == 0 {
@@ -665,7 +665,7 @@ func SendPoll(c echo.Context) error {
 // @Tags        WhatsApp Message
 // @Accept      multipart/form-data
 // @Produce     json
-// @Param       msisdn    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
+// @Param       phone    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
 // @Param       messageid formData  string  true  "Message ID"
 // @Param       message   formData  string  true  "Text Message"
 // @Success     200
@@ -676,12 +676,12 @@ func MessageEdit(c echo.Context) error {
 	jid := jwtPayload(c).JID
 
 	var reqMessageUpdate typWhatsApp.RequestMessage
-	reqMessageUpdate.RJID = strings.TrimSpace(c.FormValue("msisdn"))
+	reqMessageUpdate.RJID = strings.TrimSpace(c.FormValue("phone"))
 	reqMessageUpdate.MSGID = strings.TrimSpace(c.FormValue("messageid"))
 	reqMessageUpdate.Message = strings.TrimSpace(c.FormValue("message"))
 
 	if len(reqMessageUpdate.RJID) == 0 {
-		return router.ResponseBadRequest(c, "Missing Form Value MSISDN")
+		return router.ResponseBadRequest(c, "Missing Form Value phone")
 	}
 
 	if len(reqMessageUpdate.MSGID) == 0 {
@@ -707,7 +707,7 @@ func MessageEdit(c echo.Context) error {
 // @Tags        WhatsApp Message
 // @Accept      multipart/form-data
 // @Produce     json
-// @Param       msisdn    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
+// @Param       phone    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
 // @Param       messageid formData  string  true  "Message ID"
 // @Param       emoji     formData  string  true  "Reaction Emoji"
 // @Success     200
@@ -718,12 +718,12 @@ func MessageReact(c echo.Context) error {
 	jid := jwtPayload(c).JID
 
 	var reqMessageUpdate typWhatsApp.RequestMessage
-	reqMessageUpdate.RJID = strings.TrimSpace(c.FormValue("msisdn"))
+	reqMessageUpdate.RJID = strings.TrimSpace(c.FormValue("phone"))
 	reqMessageUpdate.MSGID = strings.TrimSpace(c.FormValue("messageid"))
 	reqMessageUpdate.Emoji = strings.TrimSpace(c.FormValue("emoji"))
 
 	if len(reqMessageUpdate.RJID) == 0 {
-		return router.ResponseBadRequest(c, "Missing Form Value MSISDN")
+		return router.ResponseBadRequest(c, "Missing Form Value phone")
 	}
 
 	if len(reqMessageUpdate.MSGID) == 0 {
@@ -749,7 +749,7 @@ func MessageReact(c echo.Context) error {
 // @Tags        WhatsApp Message
 // @Accept      multipart/form-data
 // @Produce     json
-// @Param       msisdn    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
+// @Param       phone    formData  string  true  "Destination WhatsApp Personal ID or Group ID"
 // @Param       messageid formData  string  true  "Message ID"
 // @Success     200
 // @Security    BearerAuth
@@ -759,11 +759,11 @@ func MessageDelete(c echo.Context) error {
 	jid := jwtPayload(c).JID
 
 	var reqMessageUpdate typWhatsApp.RequestMessage
-	reqMessageUpdate.RJID = strings.TrimSpace(c.FormValue("msisdn"))
+	reqMessageUpdate.RJID = strings.TrimSpace(c.FormValue("phone"))
 	reqMessageUpdate.MSGID = strings.TrimSpace(c.FormValue("messageid"))
 
 	if len(reqMessageUpdate.RJID) == 0 {
-		return router.ResponseBadRequest(c, "Missing Form Value MSISDN")
+		return router.ResponseBadRequest(c, "Missing Form Value phone")
 	}
 
 	if len(reqMessageUpdate.MSGID) == 0 {
