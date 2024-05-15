@@ -422,6 +422,32 @@ paths:
       summary: Send Location Message
       tags:
       - WhatsApp Send Message
+  /send/message:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Send Text Message to Spesific WhatsApp Personal ID or Group ID
+      parameters:
+      - description: Destination WhatsApp Personal ID or Group ID
+        in: formData
+        name: phone
+        required: true
+        type: string
+      - description: Text Message
+        in: formData
+        name: message
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - BearerAuth: []
+      summary: Send Text Message
+      tags:
+      - WhatsApp Send Message
   /send/poll:
     post:
       consumes:
@@ -483,32 +509,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Send Sticker Message
-      tags:
-      - WhatsApp Send Message
-  /send/text:
-    post:
-      consumes:
-      - multipart/form-data
-      description: Send Text Message to Spesific WhatsApp Personal ID or Group ID
-      parameters:
-      - description: Destination WhatsApp Personal ID or Group ID
-        in: formData
-        name: phone
-        required: true
-        type: string
-      - description: Text Message
-        in: formData
-        name: message
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      security:
-      - BearerAuth: []
-      summary: Send Text Message
       tags:
       - WhatsApp Send Message
   /send/video:
