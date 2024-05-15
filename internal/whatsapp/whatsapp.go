@@ -267,7 +267,7 @@ func LeaveGroup(c echo.Context) error {
 // @Param       message   formData  string  true  "Text Message"
 // @Success     200
 // @Security    BearerAuth
-// @Router      /send/text [post]
+// @Router      /send/message [post]
 func SendText(c echo.Context) error {
 	var err error
 	jid := jwtPayload(c).JID
