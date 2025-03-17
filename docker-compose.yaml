@@ -11,13 +11,12 @@ services:
       dockerfile: ./Dockerfile
     image: 'ilhamfadhilah/whatsapp-rest:dev'
     container_name: 'whatsapp-rest'
-    # entrypoint: ["tail", "-f", "/dev/null"]
     depends_on:
       - postgres
     networks:
       default:
     ports:
-      - 3000:3000
+      - 1321:1321
     env_file:
       - ./.env
     volumes:
