@@ -6,5 +6,6 @@ dbs/*
 *.DS_Store
 !*.gitkeep
 misc/docker/volumes
+misc/docker/.env.docker
 !misc/docker/.env
 tmp
