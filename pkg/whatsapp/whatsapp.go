@@ -1374,7 +1374,6 @@ func whatsAppEventHandler(evt interface{}) {
 			fmt.Println("Error marshalling message event:", err)
 			return
 		}
-		fmt.Println("Sending message event to webhook:", string(jsonBytes))
 		postData := []byte(jsonBytes)
 		res, err := client.Post(app.AppWebhookURL, postData)
 		respBody := database.AppWebhookResponse{
