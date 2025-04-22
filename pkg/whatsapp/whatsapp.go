@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -28,9 +29,13 @@ import (
 	"go.mau.fi/whatsmeow/store"
 	"go.mau.fi/whatsmeow/store/sqlstore"
 	"go.mau.fi/whatsmeow/types"
+	"go.mau.fi/whatsmeow/types/events"
 
+	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/app"
+	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/app/database"
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/env"
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/log"
+	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/utils"
 )
 
 var WhatsAppDatastore *sqlstore.Container
@@ -106,6 +111,11 @@ func WhatsAppInitClient(device *store.Device, jid string) {
 
 		// Set WhatsApp Client Auto Trust Identity
 		WhatsAppClient[jid].AutoTrustIdentity = true
+
+		// Set WhatsApp Client Event Handler
+		WhatsAppClient[jid].AddEventHandler(func(evt interface{}) {
+			whatsAppEventHandler(evt)
+		})
 	}
 }
 
@@ -1341,4 +1351,43 @@ func WhatsAppGroupLeave(jid string, gjid string) error {
 
 	// Return Error WhatsApp Client is not Valid
 	return errors.New("WhatsApp Client is not Valid")
+}
+
+func whatsAppEventHandler(evt interface{}) {
+	switch v := evt.(type) {
+	case *events.Message:
+		headers := map[string]string{
+			"Content-Type": "application/json",
+		}
+
+		if app.AppWebhookBasicAuth != "" {
+			headers["Authorization"] = "Basic " + app.AppWebhookBasicAuth
+		}
+
+		client := utils.NewHttpClient(utils.HttpClientOptions{
+			Timeout: 30 * time.Second,
+			Headers: headers,
+		})
+
+		jsonBytes, err := json.Marshal(v)
+		if err != nil {
+			fmt.Println("Error marshalling message event:", err)
+			return
+		}
+		fmt.Println("Sending message event to webhook:", string(jsonBytes))
+		postData := []byte(jsonBytes)
+		res, err := client.Post(app.AppWebhookURL, postData)
+		respBody := database.AppWebhookResponse{
+			CallbackUrl: app.AppWebhookURL,
+			Status:      res.Status,
+			Response:    json.RawMessage(res.Body),
+		}
+		if err != nil {
+			respBody.ErrorMessage = err.Error()
+		}
+		err = app.AppDatabase.StoreResponse(&respBody)
+		if err != nil {
+			fmt.Println("Error storing webhook response:", err)
+		}
+	}
 }

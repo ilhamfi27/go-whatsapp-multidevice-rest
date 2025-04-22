@@ -5,4 +5,6 @@ dbs/*
 .env
 *.DS_Store
 !*.gitkeep
-postgres/*
+misc/docker/volumes
+!misc/docker/.env
+tmp
