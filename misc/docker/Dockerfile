@@ -12,7 +12,7 @@ RUN go mod download \
 
 # Final Image
 # ---------------------------------------------------
-FROM dimaskiddo/alpine:base-glibc
+FROM alpine:3.21.3 as final
 
 ARG SERVICE_NAME="go-whatsapp-multidevice-rest"
 
@@ -25,8 +25,6 @@ RUN mkdir -p {.bin/webp,dbs} \
 
 COPY --from=go-builder /usr/src/app/.env.example ./.env
 COPY --from=go-builder /usr/src/app/main ./main
-
-EXPOSE 3000
 
 VOLUME ["/usr/app/${SERVICE_NAME}/dbs"]
 CMD ["main"]

@@ -9,3 +9,4 @@ misc/docker/volumes
 misc/docker/.env.docker
 !misc/docker/.env
 tmp
+node_modules

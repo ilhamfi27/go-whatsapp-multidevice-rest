@@ -15,8 +15,8 @@ services:
   whatsapp-rest-1:
     <<: *whatsapp-rest
 
-  whatsapp-rest-2:
-    <<: *whatsapp-rest
+  # whatsapp-rest-2:
+  #   <<: *whatsapp-rest
 
-  whatsapp-rest-3:
-    <<: *whatsapp-rest
+  # whatsapp-rest-3:
+  #   <<: *whatsapp-rest
