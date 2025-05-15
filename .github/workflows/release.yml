@@ -3,7 +3,7 @@ name: Semantic Release and Docker Publish
 on:
   push:
     branches:
-      - master
+      - ignore-all
 
 permissions:
   contents: write  # required to allow pushing tags & changelog updates
