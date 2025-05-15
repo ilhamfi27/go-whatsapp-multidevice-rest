@@ -3,11 +3,7 @@
     "info": {
         "description": "This is WhatsApp Multi-Device Implementation in Go REST API",
         "title": "Go WhatsApp Multi-Device REST API",
-        "contact": {
-            "name": "Dimas Restu Hidayanto",
-            "url": "https://github.com/dimaskiddo",
-            "email": "drh.dimasrestu@gmail.com"
-        },
+        "contact": {},
         "version": "1.x"
     },
     "paths": {
@@ -23,7 +19,7 @@
                 "summary": "Show The Status of The Server",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -45,7 +41,7 @@
                 "summary": "Generate Authentication Token",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -67,7 +63,7 @@
                 "summary": "Get Joined Groups Information",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -98,7 +94,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -129,7 +125,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -168,7 +164,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -193,7 +189,7 @@
                 "summary": "Pair Phone for WhatsApp Multi-Device Login",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -215,7 +211,7 @@
                 "summary": "Logout Device from WhatsApp Multi-Device",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -242,7 +238,7 @@
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "msisdn",
+                        "name": "phone",
                         "in": "formData",
                         "required": true
                     },
@@ -256,7 +252,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -283,7 +279,7 @@
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "msisdn",
+                        "name": "phone",
                         "in": "formData",
                         "required": true
                     },
@@ -304,7 +300,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -331,7 +327,7 @@
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "msisdn",
+                        "name": "phone",
                         "in": "formData",
                         "required": true
                     },
@@ -352,7 +348,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -376,14 +372,14 @@
                     {
                         "type": "string",
                         "description": "WhatsApp Personal ID to Check",
-                        "name": "msisdn",
+                        "name": "phone",
                         "in": "query",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -410,7 +406,7 @@
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "msisdn",
+                        "name": "phone",
                         "in": "formData",
                         "required": true
                     },
@@ -424,7 +420,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -451,7 +447,7 @@
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "msisdn",
+                        "name": "phone",
                         "in": "formData",
                         "required": true
                     },
@@ -472,7 +468,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -499,7 +495,7 @@
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "msisdn",
+                        "name": "phone",
                         "in": "formData",
                         "required": true
                     },
@@ -513,7 +509,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -540,7 +536,7 @@
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "msisdn",
+                        "name": "phone",
                         "in": "formData",
                         "required": true
                     },
@@ -568,7 +564,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -595,7 +591,7 @@
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "msisdn",
+                        "name": "phone",
                         "in": "formData",
                         "required": true
                     },
@@ -615,7 +611,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -642,7 +638,7 @@
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "msisdn",
+                        "name": "phone",
                         "in": "formData",
                         "required": true
                     },
@@ -663,7 +659,48 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/send/message": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Send Text Message to Spesific WhatsApp Personal ID or Group ID",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WhatsApp Send Message"
+                ],
+                "summary": "Send Text Message",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Destination WhatsApp Personal ID or Group ID",
+                        "name": "phone",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Text Message",
+                        "name": "message",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
                     }
                 }
             }
@@ -690,7 +727,7 @@
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "msisdn",
+                        "name": "phone",
                         "in": "formData",
                         "required": true
                     },
@@ -718,7 +755,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -745,7 +782,7 @@
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "msisdn",
+                        "name": "phone",
                         "in": "formData",
                         "required": true
                     },
@@ -759,48 +796,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
-                    }
-                }
-            }
-        },
-        "/send/text": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Send Text Message to Spesific WhatsApp Personal ID or Group ID",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "WhatsApp Send Message"
-                ],
-                "summary": "Send Text Message",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "msisdn",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Text Message",
-                        "name": "message",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -827,7 +823,7 @@
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "msisdn",
+                        "name": "phone",
                         "in": "formData",
                         "required": true
                     },
@@ -855,7 +851,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }

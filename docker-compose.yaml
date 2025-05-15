@@ -5,18 +5,44 @@ networks:
     driver: bridge
 
 services:
-  go-whatsapp-multidevice-rest:
+  whatsapp-rest:
     build:
       context: .
       dockerfile: ./Dockerfile
-    image: 'dimaskiddo/go-whatsapp-multidevice-rest:latest'
-    container_name: 'go-whatsapp-multidevice-rest'
+    image: 'ilhamfadhilah/whatsapp-rest:dev'
+    container_name: 'whatsapp-rest'
+    depends_on:
+      - postgres
     networks:
-      - whatsapp
+      default:
     ports:
-      - 3000:3000
+      - 1321:1321
     env_file:
       - ./.env
     volumes:
       - ./dbs:/usr/app/go-whatsapp-multidevice-rest/dbs
+
+  postgres:
+    image: postgres:16.2
     restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "0.0.0.0:32432:5432"
+    volumes:
+      - "./postgres:/var/lib/postgresql/data"
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U postgres -d postgres',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      default:
+  
