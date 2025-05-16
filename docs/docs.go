@@ -9,7 +9,11 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "Dimas Restu Hidayanto",
+            "url": "https://github.com/dimaskiddo",
+            "email": "drh.dimasrestu@gmail.com"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -246,7 +250,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "phone",
+                        "name": "msisdn",
                         "in": "formData",
                         "required": true
                     },
@@ -287,7 +291,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "phone",
+                        "name": "msisdn",
                         "in": "formData",
                         "required": true
                     },
@@ -335,7 +339,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "phone",
+                        "name": "msisdn",
                         "in": "formData",
                         "required": true
                     },
@@ -380,7 +384,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "WhatsApp Personal ID to Check",
-                        "name": "phone",
+                        "name": "msisdn",
                         "in": "query",
                         "required": true
                     }
@@ -414,7 +418,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "phone",
+                        "name": "msisdn",
                         "in": "formData",
                         "required": true
                     },
@@ -455,7 +459,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "phone",
+                        "name": "msisdn",
                         "in": "formData",
                         "required": true
                     },
@@ -503,7 +507,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "phone",
+                        "name": "msisdn",
                         "in": "formData",
                         "required": true
                     },
@@ -544,7 +548,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "phone",
+                        "name": "msisdn",
                         "in": "formData",
                         "required": true
                     },
@@ -599,7 +603,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "phone",
+                        "name": "msisdn",
                         "in": "formData",
                         "required": true
                     },
@@ -646,7 +650,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "phone",
+                        "name": "msisdn",
                         "in": "formData",
                         "required": true
                     },
@@ -661,47 +665,6 @@ const docTemplate = `{
                         "type": "number",
                         "description": "Location Longitude",
                         "name": "longitude",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/send/message": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Send Text Message to Spesific WhatsApp Personal ID or Group ID",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "WhatsApp Send Message"
-                ],
-                "summary": "Send Text Message",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "phone",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Text Message",
-                        "name": "message",
                         "in": "formData",
                         "required": true
                     }
@@ -735,7 +698,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "phone",
+                        "name": "msisdn",
                         "in": "formData",
                         "required": true
                     },
@@ -790,7 +753,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "phone",
+                        "name": "msisdn",
                         "in": "formData",
                         "required": true
                     },
@@ -798,6 +761,47 @@ const docTemplate = `{
                         "type": "file",
                         "description": "Sticker File",
                         "name": "sticker",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/send/text": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Send Text Message to Spesific WhatsApp Personal ID or Group ID",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WhatsApp Send Message"
+                ],
+                "summary": "Send Text Message",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Destination WhatsApp Personal ID or Group ID",
+                        "name": "msisdn",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Text Message",
+                        "name": "message",
                         "in": "formData",
                         "required": true
                     }
@@ -831,7 +835,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Destination WhatsApp Personal ID or Group ID",
-                        "name": "phone",
+                        "name": "msisdn",
                         "in": "formData",
                         "required": true
                     },

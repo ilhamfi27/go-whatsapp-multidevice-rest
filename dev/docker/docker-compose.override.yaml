@@ -1,7 +1,7 @@
 x-app: &whatsapp-rest
   image: 'cosmtrek/air:v1.61.7'
   # entrypoint: ['tail', '-f', '/dev/null']
-  command: ['-c', '/app/src/misc/docker/air/air.toml']
+  command: ['-c', '/app/src/misc/docker/air/.air.toml']
   depends_on:
     - postgres
   volumes:

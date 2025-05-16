@@ -7,14 +7,13 @@ import (
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/app/database"
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/app/http"
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/env"
-	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/utils"
 )
 
 var (
 	AppWebhookURL       string
 	AppWebhookBasicAuth string
 	AppDatabase         *database.DatabaseContainer
-	AppRequest          *http.AppHttpRequest
+	AppRequest          *http.HttpClient
 )
 
 func init() {
@@ -68,11 +67,10 @@ func initHttpRequest() {
 		headers["Authorization"] = "Basic " + AppWebhookBasicAuth
 	}
 
-	client := utils.NewHttpClient(utils.HttpClientOptions{
+	client := http.NewHttpClient(http.HttpClientOptions{
 		Timeout: 30 * time.Second,
 		Headers: headers,
 	})
-	AppRequest = &http.AppHttpRequest{
-		Client: client,
-	}
+
+	AppRequest = client
 }

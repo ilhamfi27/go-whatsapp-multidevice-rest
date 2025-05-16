@@ -1,5 +1,8 @@
 info:
-  contact: {}
+  contact:
+    email: drh.dimasrestu@gmail.com
+    name: Dimas Restu Hidayanto
+    url: https://github.com/dimaskiddo
   description: This is WhatsApp Multi-Device Implementation in Go REST API
   title: Go WhatsApp Multi-Device REST API
   version: 1.x
@@ -140,7 +143,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: phone
+        name: msisdn
         required: true
         type: string
       - description: Message ID
@@ -166,7 +169,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: phone
+        name: msisdn
         required: true
         type: string
       - description: Message ID
@@ -197,7 +200,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: phone
+        name: msisdn
         required: true
         type: string
       - description: Message ID
@@ -226,7 +229,7 @@ paths:
       parameters:
       - description: WhatsApp Personal ID to Check
         in: query
-        name: phone
+        name: msisdn
         required: true
         type: string
       produces:
@@ -247,7 +250,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: phone
+        name: msisdn
         required: true
         type: string
       - description: Audio File
@@ -274,7 +277,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: phone
+        name: msisdn
         required: true
         type: string
       - description: Contact Name
@@ -306,7 +309,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: phone
+        name: msisdn
         required: true
         type: string
       - description: Document File
@@ -332,7 +335,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: phone
+        name: msisdn
         required: true
         type: string
       - description: Caption Image Message
@@ -368,7 +371,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: phone
+        name: msisdn
         required: true
         type: string
       - description: Link Caption
@@ -399,7 +402,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: phone
+        name: msisdn
         required: true
         type: string
       - description: Location Latitude
@@ -422,32 +425,6 @@ paths:
       summary: Send Location Message
       tags:
       - WhatsApp Send Message
-  /send/message:
-    post:
-      consumes:
-      - multipart/form-data
-      description: Send Text Message to Spesific WhatsApp Personal ID or Group ID
-      parameters:
-      - description: Destination WhatsApp Personal ID or Group ID
-        in: formData
-        name: phone
-        required: true
-        type: string
-      - description: Text Message
-        in: formData
-        name: message
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      security:
-      - BearerAuth: []
-      summary: Send Text Message
-      tags:
-      - WhatsApp Send Message
   /send/poll:
     post:
       consumes:
@@ -456,7 +433,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: phone
+        name: msisdn
         required: true
         type: string
       - description: Poll Question
@@ -493,7 +470,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: phone
+        name: msisdn
         required: true
         type: string
       - description: Sticker File
@@ -511,6 +488,32 @@ paths:
       summary: Send Sticker Message
       tags:
       - WhatsApp Send Message
+  /send/text:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Send Text Message to Spesific WhatsApp Personal ID or Group ID
+      parameters:
+      - description: Destination WhatsApp Personal ID or Group ID
+        in: formData
+        name: msisdn
+        required: true
+        type: string
+      - description: Text Message
+        in: formData
+        name: message
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - BearerAuth: []
+      summary: Send Text Message
+      tags:
+      - WhatsApp Send Message
   /send/video:
     post:
       consumes:
@@ -519,7 +522,7 @@ paths:
       parameters:
       - description: Destination WhatsApp Personal ID or Group ID
         in: formData
-        name: phone
+        name: msisdn
         required: true
         type: string
       - description: Caption Video Message

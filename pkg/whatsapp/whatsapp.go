@@ -1355,7 +1355,7 @@ func WhatsAppGroupLeave(jid string, gjid string) error {
 func whatsAppEventHandler(evt interface{}) {
 	switch v := evt.(type) {
 	case *events.Message:
-		res, err := app.AppRequest.Client.Post(app.AppWebhookURL, v)
+		res, err := app.AppRequest.Post(app.AppWebhookURL, v)
 		respBody := database.AppWebhookResponse{
 			CallbackUrl: app.AppWebhookURL,
 			Status:      res.Status,
