@@ -35,7 +35,6 @@ import (
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/app/database"
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/env"
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/log"
-	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/utils"
 )
 
 var WhatsAppDatastore *sqlstore.Container
@@ -1356,26 +1355,7 @@ func WhatsAppGroupLeave(jid string, gjid string) error {
 func whatsAppEventHandler(evt interface{}) {
 	switch v := evt.(type) {
 	case *events.Message:
-		headers := map[string]string{
-			"Content-Type": "application/json",
-		}
-
-		if app.AppWebhookBasicAuth != "" {
-			headers["Authorization"] = "Basic " + app.AppWebhookBasicAuth
-		}
-
-		client := utils.NewHttpClient(utils.HttpClientOptions{
-			Timeout: 30 * time.Second,
-			Headers: headers,
-		})
-
-		jsonBytes, err := json.Marshal(v)
-		if err != nil {
-			fmt.Println("Error marshalling message event:", err)
-			return
-		}
-		postData := []byte(jsonBytes)
-		res, err := client.Post(app.AppWebhookURL, postData)
+		res, err := app.AppRequest.Client.Post(app.AppWebhookURL, v)
 		respBody := database.AppWebhookResponse{
 			CallbackUrl: app.AppWebhookURL,
 			Status:      res.Status,

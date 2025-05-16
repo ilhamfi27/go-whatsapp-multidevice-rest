@@ -2,15 +2,19 @@ package app
 
 import (
 	"log"
+	"time"
 
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/app/database"
+	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/app/http"
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/env"
+	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/utils"
 )
 
 var (
 	AppWebhookURL       string
 	AppWebhookBasicAuth string
 	AppDatabase         *database.DatabaseContainer
+	AppRequest          *http.AppHttpRequest
 )
 
 func init() {
@@ -27,11 +31,7 @@ func init() {
 	}
 
 	// Initialize App Client Datastore
-	appDb, err := database.New(dbType, dbURI)
-	if err != nil {
-		log.Fatal("Error Connect Application Datastore: ", err)
-	}
-	AppDatabase = appDb
+	initDB(dbType, dbURI)
 
 	appWebhookUrl, err := env.GetEnvString("APP_WEBHOOK_URL_TARGET")
 	if err != nil {
@@ -44,4 +44,35 @@ func init() {
 		AppWebhookBasicAuth = ""
 	}
 	AppWebhookBasicAuth = appWebhookBasicAuth
+
+	// Initialize App HTTP Request
+	initHttpRequest()
+}
+
+func initDB(dbType string, dbURI string) {
+	// Initialize App Client Datastore
+	appDb, err := database.New(dbType, dbURI)
+	if err != nil {
+		log.Fatal("Error Connect Application Datastore: ", err)
+	}
+	AppDatabase = appDb
+}
+
+func initHttpRequest() {
+	// Initialize App HTTP Request
+	headers := map[string]string{
+		"Content-Type": "application/json",
+	}
+
+	if AppWebhookBasicAuth != "" {
+		headers["Authorization"] = "Basic " + AppWebhookBasicAuth
+	}
+
+	client := utils.NewHttpClient(utils.HttpClientOptions{
+		Timeout: 30 * time.Second,
+		Headers: headers,
+	})
+	AppRequest = &http.AppHttpRequest{
+		Client: client,
+	}
 }

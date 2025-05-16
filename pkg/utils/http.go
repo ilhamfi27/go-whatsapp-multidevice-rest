@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -127,12 +128,15 @@ func (h *HttpClient) Get(url string) (*HttpResponse, error) {
 }
 
 // Post performs a POST request and returns full response info
-func (h *HttpClient) Post(url string, jsonData []byte) (*HttpResponse, error) {
-	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jsonData))
+func (h *HttpClient) Post(url string, data any) (*HttpResponse, error) {
+	jsonBytes, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Content-Type", "application/json")
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer([]byte(jsonBytes)))
+	if err != nil {
+		return nil, err
+	}
 	h.applyHeaders(req)
 
 	resp, err := h.Client.Do(req)
