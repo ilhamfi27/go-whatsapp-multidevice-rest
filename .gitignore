@@ -5,8 +5,8 @@ dbs/*
 .env
 *.DS_Store
 !*.gitkeep
-misc/docker/volumes
-misc/docker/.env.docker
-!misc/docker/.env
+dev/docker/volumes
+dev/docker/.env.docker
+!dev/docker/.env
 tmp
 node_modules

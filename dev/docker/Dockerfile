@@ -12,7 +12,8 @@ RUN go mod download \
 
 # Final Image
 # ---------------------------------------------------
-FROM alpine:3.21.3 as final
+FROM dimaskiddo/alpine:base-glibc
+MAINTAINER Dimas Restu Hidayanto <dimas.restu@student.upi.edu>
 
 ARG SERVICE_NAME="go-whatsapp-multidevice-rest"
 
@@ -28,3 +29,4 @@ COPY --from=go-builder /usr/src/app/main ./main
 
 VOLUME ["/usr/app/${SERVICE_NAME}/dbs"]
 CMD ["main"]
+    
