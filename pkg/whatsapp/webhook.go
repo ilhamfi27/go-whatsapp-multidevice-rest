@@ -1,10 +1,16 @@
 package whatsapp
 
 import (
+	"context"
+	"encoding/base64"
+	"fmt"
 	"time"
 
+	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/types"
 	"go.mau.fi/whatsmeow/types/events"
+
+	mediapkg "github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/media"
 )
 
 // WebhookPayload is the unified envelope sent to the webhook URL for all events.
@@ -28,11 +34,74 @@ type WebhookMessageData struct {
 	IsViewOnce bool      `json:"is_view_once,omitempty"`
 	Type       string    `json:"type"`
 	Text       string    `json:"text,omitempty"`
+	MimeType   string    `json:"mime_type,omitempty"`
+	// Media contains base64-encoded bytes only when MEDIA_STORAGE=none (default).
+	Media string `json:"media,omitempty"`
+	// MediaURL is populated when MEDIA_STORAGE=local or MEDIA_STORAGE=s3.
+	MediaURL string `json:"media_url,omitempty"`
 }
 
-func buildMessagePayload(v *events.Message) WebhookPayload {
+// storeMedia downloads the given message attachment and either saves it via the
+// configured storage backend (returning a URL) or returns raw base64 bytes.
+func storeMedia(ctx context.Context, client *whatsmeow.Client, msg whatsmeow.DownloadableMessage, msgID, mimeType string) (media, mediaURL string) {
+	if client == nil {
+		return
+	}
+	data, err := client.Download(ctx, msg)
+	if err != nil {
+		return
+	}
+
+	if mediapkg.MediaStorage != nil {
+		// Derive a deterministic filename from the message ID and MIME type.
+		ext := mimeToExt(mimeType)
+		filename := fmt.Sprintf("%s%s", msgID, ext)
+		url, err := mediapkg.MediaStorage.Save(ctx, filename, mimeType, data)
+		if err == nil {
+			mediaURL = url
+			return
+		}
+		// Fall through to base64 on error.
+	}
+
+	// Fallback / MEDIA_STORAGE=none: embed as base64.
+	media = base64.StdEncoding.EncodeToString(data)
+	return
+}
+
+// mimeToExt maps common MIME types to file extensions.
+func mimeToExt(mimeType string) string {
+	switch mimeType {
+	case "image/jpeg":
+		return ".jpg"
+	case "image/png":
+		return ".png"
+	case "image/webp":
+		return ".webp"
+	case "image/gif":
+		return ".gif"
+	case "video/mp4":
+		return ".mp4"
+	case "video/3gpp":
+		return ".3gp"
+	case "audio/ogg":
+		return ".ogg"
+	case "audio/mpeg":
+		return ".mp3"
+	case "audio/aac":
+		return ".aac"
+	case "application/pdf":
+		return ".pdf"
+	}
+	return ".bin"
+}
+
+func buildMessagePayload(client *whatsmeow.Client, v *events.Message) WebhookPayload {
 	msgType := "unknown"
 	msgText := ""
+	msgMime := ""
+	msgMedia := ""
+	msgMediaURL := ""
 
 	msg := v.Message
 	if msg != nil {
@@ -46,16 +115,26 @@ func buildMessagePayload(v *events.Message) WebhookPayload {
 		case msg.GetImageMessage() != nil:
 			msgType = "image"
 			msgText = msg.GetImageMessage().GetCaption()
+			msgMime = msg.GetImageMessage().GetMimetype()
+			msgMedia, msgMediaURL = storeMedia(context.Background(), client, msg.GetImageMessage(), v.Info.ID, msgMime)
 		case msg.GetVideoMessage() != nil:
 			msgType = "video"
 			msgText = msg.GetVideoMessage().GetCaption()
+			msgMime = msg.GetVideoMessage().GetMimetype()
+			msgMedia, msgMediaURL = storeMedia(context.Background(), client, msg.GetVideoMessage(), v.Info.ID, msgMime)
 		case msg.GetAudioMessage() != nil:
 			msgType = "audio"
+			msgMime = msg.GetAudioMessage().GetMimetype()
+			msgMedia, msgMediaURL = storeMedia(context.Background(), client, msg.GetAudioMessage(), v.Info.ID, msgMime)
 		case msg.GetDocumentMessage() != nil:
 			msgType = "document"
 			msgText = msg.GetDocumentMessage().GetCaption()
+			msgMime = msg.GetDocumentMessage().GetMimetype()
+			msgMedia, msgMediaURL = storeMedia(context.Background(), client, msg.GetDocumentMessage(), v.Info.ID, msgMime)
 		case msg.GetStickerMessage() != nil:
 			msgType = "sticker"
+			msgMime = msg.GetStickerMessage().GetMimetype()
+			msgMedia, msgMediaURL = storeMedia(context.Background(), client, msg.GetStickerMessage(), v.Info.ID, msgMime)
 		case msg.GetLocationMessage() != nil:
 			msgType = "location"
 		case msg.GetContactMessage() != nil:
@@ -84,6 +163,9 @@ func buildMessagePayload(v *events.Message) WebhookPayload {
 			IsViewOnce: v.IsViewOnce,
 			Type:       msgType,
 			Text:       msgText,
+			MimeType:   msgMime,
+			Media:      msgMedia,
+			MediaURL:   msgMediaURL,
 		},
 	}
 }

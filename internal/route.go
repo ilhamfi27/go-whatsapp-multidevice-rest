@@ -8,6 +8,7 @@ import (
 
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/docs"
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/auth"
+	mediapkg "github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/media"
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/router"
 
 	ctlAuth "github.com/dimaskiddo/go-whatsapp-multidevice-rest/internal/auth"
@@ -25,6 +26,15 @@ func Routes(e *echo.Echo) {
 	// ---------------------------------------------
 	e.GET(router.BaseURL, ctlIndex.Index)
 	e.GET(router.BaseURL+"/", ctlIndex.Index)
+
+	// Route for Media (local storage only)
+	// ---------------------------------------------
+	if mediapkg.StorageType == "local" {
+		localDir := mediapkg.LocalDir()
+		if localDir != "" {
+			e.Static(router.BaseURL+"/media", localDir)
+		}
+	}
 
 	// Route for OpenAPI / Swagger
 	// ---------------------------------------------

@@ -110,8 +110,9 @@ func WhatsAppInitClient(device *store.Device, jid string) {
 		WhatsAppClient[jid].AutoTrustIdentity = true
 
 		// Set WhatsApp Client Event Handler
+		client := WhatsAppClient[jid]
 		WhatsAppClient[jid].AddEventHandler(func(evt interface{}) {
-			whatsAppEventHandler(evt)
+			whatsAppEventHandler(client, evt)
 		})
 	}
 }
@@ -1354,12 +1355,12 @@ func WhatsAppGroupLeave(jid string, gjid string) error {
 	return errors.New("WhatsApp Client is not Valid")
 }
 
-func whatsAppEventHandler(evt interface{}) {
+func whatsAppEventHandler(client *whatsmeow.Client, evt interface{}) {
 	var payload *WebhookPayload
 
 	switch v := evt.(type) {
 	case *events.Message:
-		p := buildMessagePayload(v)
+		p := buildMessagePayload(client, v)
 		payload = &p
 	case *events.Receipt:
 		p := buildReceiptPayload(v)
