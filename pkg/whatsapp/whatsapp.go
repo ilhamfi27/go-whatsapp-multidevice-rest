@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -32,7 +31,6 @@ import (
 	"go.mau.fi/whatsmeow/types/events"
 
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/app"
-	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/app/database"
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/env"
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/log"
 )
@@ -1357,20 +1355,53 @@ func WhatsAppGroupLeave(jid string, gjid string) error {
 }
 
 func whatsAppEventHandler(evt interface{}) {
+	var payload *WebhookPayload
+
 	switch v := evt.(type) {
 	case *events.Message:
-		res, err := app.AppRequest.Post(app.AppWebhookURL, v)
-		respBody := database.AppWebhookResponse{
-			CallbackUrl: app.AppWebhookURL,
-			Status:      res.Status,
-			Response:    json.RawMessage(res.Body),
-		}
-		if err != nil {
-			respBody.ErrorMessage = err.Error()
-		}
-		err = app.AppDatabase.StoreResponse(&respBody)
-		if err != nil {
-			fmt.Println("Error storing webhook response:", err)
+		p := buildMessagePayload(v)
+		payload = &p
+	case *events.Receipt:
+		p := buildReceiptPayload(v)
+		payload = &p
+	case *events.ChatPresence:
+		p := buildChatPresencePayload(v)
+		payload = &p
+	case *events.Presence:
+		p := buildPresencePayload(v)
+		payload = &p
+	case *events.GroupInfo:
+		p := buildGroupInfoPayload(v)
+		payload = &p
+	case *events.JoinedGroup:
+		p := buildJoinedGroupPayload(v)
+		payload = &p
+	case *events.Picture:
+		p := buildPicturePayload(v)
+		payload = &p
+	case *events.Connected:
+		p := buildConnectedPayload()
+		payload = &p
+	case *events.Disconnected:
+		p := buildDisconnectedPayload()
+		payload = &p
+	case *events.LoggedOut:
+		p := buildLoggedOutPayload(v)
+		payload = &p
+	case *events.CallOffer:
+		p := buildCallOfferPayload(v)
+		payload = &p
+	case *events.CallTerminate:
+		p := buildCallTerminatePayload(v)
+		payload = &p
+	case *events.CallReject:
+		p := buildCallRejectPayload(v)
+		payload = &p
+	}
+
+	if payload != nil {
+		if len(app.AppWebhookEvents) == 0 || app.AppWebhookEvents[payload.Event] {
+			app.AppRequest.Post(app.AppWebhookURL, payload)
 		}
 	}
 }

@@ -2,6 +2,7 @@ package app
 
 import (
 	"log"
+	"strings"
 	"time"
 
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/app/http"
@@ -11,6 +12,7 @@ import (
 var (
 	AppWebhookURL       string
 	AppWebhookBasicAuth string
+	AppWebhookEvents    map[string]bool // nil or empty = allow all events
 	AppRequest          *http.HttpClient
 )
 
@@ -28,6 +30,20 @@ func init() {
 		AppWebhookBasicAuth = ""
 	}
 	AppWebhookBasicAuth = appWebhookBasicAuth
+
+	// Parse Webhook Event Whitelist
+	appWebhookEvents, err := env.GetEnvString("APP_WEBHOOK_EVENTS")
+	if err != nil {
+		AppWebhookEvents = nil
+	} else {
+		AppWebhookEvents = make(map[string]bool)
+		for _, e := range strings.Split(appWebhookEvents, ",") {
+			e = strings.TrimSpace(strings.ToLower(e))
+			if e != "" {
+				AppWebhookEvents[e] = true
+			}
+		}
+	}
 
 	// Initialize App HTTP Request
 	initHttpRequest()
