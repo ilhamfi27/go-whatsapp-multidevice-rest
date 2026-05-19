@@ -4,9 +4,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
@@ -1389,6 +1392,15 @@ func whatsAppEventHandler(client *whatsmeow.Client, evt interface{}) {
 	case *events.LoggedOut:
 		p := buildLoggedOutPayload(v)
 		payload = &p
+		// The device was removed remotely (e.g. logged out from the phone).
+		// whatsmeow has already deleted the store record, so we must remove
+		// the stale client from the map to prevent "invalid use of deleted device".
+		if client != nil && client.Store != nil && client.Store.ID != nil {
+			jid := client.Store.ID.User
+			client.Disconnect()
+			WhatsAppClient[jid] = nil
+			delete(WhatsAppClient, jid)
+		}
 	case *events.CallOffer:
 		p := buildCallOfferPayload(v)
 		payload = &p
@@ -1401,8 +1413,51 @@ func whatsAppEventHandler(client *whatsmeow.Client, evt interface{}) {
 	}
 
 	if payload != nil {
+		if client != nil && client.Store != nil && client.Store.ID != nil {
+			payload.Phone = client.Store.ID.User
+		}
+		webhookDebugSave(evt, payload)
 		if len(app.AppWebhookEvents) == 0 || app.AppWebhookEvents[payload.Event] {
 			app.AppRequest.Post(app.AppWebhookURL, payload)
 		}
 	}
+}
+
+// webhookDebugEnvelope is the structure saved to disk when WEBHOOK_DEBUG=true.
+type webhookDebugEnvelope struct {
+	Raw       interface{}     `json:"raw"`
+	Processed *WebhookPayload `json:"processed"`
+}
+
+// webhookDebugSave writes both the raw whatsmeow event and the processed
+// WebhookPayload as an indented JSON file when WEBHOOK_DEBUG=true.
+// Files land in WEBHOOK_DEBUG_DIR (default: ./tmp/webhook-debug/).
+// Each file is named "<unix-nano>_<event>.json" so nothing is ever overwritten.
+func webhookDebugSave(raw interface{}, payload *WebhookPayload) {
+	enabled, err := env.GetEnvBool("WEBHOOK_DEBUG")
+	if err != nil || !enabled {
+		return
+	}
+
+	dir, err := env.GetEnvString("WEBHOOK_DEBUG_DIR")
+	if err != nil || strings.TrimSpace(dir) == "" {
+		dir = "./tmp/webhook-debug"
+	}
+
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return
+	}
+
+	envelope := webhookDebugEnvelope{
+		Raw:       raw,
+		Processed: payload,
+	}
+
+	data, err := json.MarshalIndent(envelope, "", "  ")
+	if err != nil {
+		return
+	}
+
+	filename := fmt.Sprintf("%d_%s.json", time.Now().UnixNano(), payload.Event)
+	_ = os.WriteFile(filepath.Join(dir, filename), data, 0644)
 }

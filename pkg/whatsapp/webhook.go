@@ -15,6 +15,7 @@ import (
 
 // WebhookPayload is the unified envelope sent to the webhook URL for all events.
 type WebhookPayload struct {
+	Phone     string      `json:"phone"`
 	Event     string      `json:"event"`
 	Timestamp time.Time   `json:"timestamp"`
 	Data      interface{} `json:"data"`
