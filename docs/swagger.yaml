@@ -44,6 +44,25 @@ paths:
       summary: Get Joined Groups Information
       tags:
       - WhatsApp Group
+  /group/{groupId}:
+    get:
+      description: Get Detailed Group Information by Group ID from WhatsApp
+      parameters:
+      - description: Group ID (e.g. 1234567890-1234567890@g.us)
+        in: path
+        name: groupId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - BearerAuth: []
+      summary: Get Group Information by Group ID
+      tags:
+      - WhatsApp Group
   /group/join:
     post:
       description: Joining to Group From Invitation Link from WhatsApp
@@ -317,6 +336,10 @@ paths:
         name: document
         required: true
         type: file
+      - description: Caption Document Message
+        in: formData
+        name: caption
+        type: string
       produces:
       - application/json
       responses:

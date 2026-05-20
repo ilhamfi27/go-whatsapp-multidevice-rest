@@ -142,6 +142,37 @@ const docTemplate = `{
                 }
             }
         },
+        "/group/{groupId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get Detailed Group Information by Group ID from WhatsApp",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WhatsApp Group"
+                ],
+                "summary": "Get Group Information by Group ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Group ID (e.g. 1234567890-1234567890@g.us)",
+                        "name": "groupId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "security": [
@@ -517,6 +548,12 @@ const docTemplate = `{
                         "name": "document",
                         "in": "formData",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Caption Document Message",
+                        "name": "caption",
+                        "in": "formData"
                     }
                 ],
                 "responses": {

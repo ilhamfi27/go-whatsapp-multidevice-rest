@@ -1305,6 +1305,40 @@ func WhatsAppGroupGet(jid string) ([]types.GroupInfo, error) {
 	return nil, errors.New("WhatsApp Client is not Valid")
 }
 
+func WhatsAppGroupGetInfo(jid string, gjid string) (*types.GroupInfo, error) {
+	if WhatsAppClient[jid] != nil {
+		var err error
+
+		// Make Sure WhatsApp Client is OK
+		err = WhatsAppIsClientOK(jid)
+		if err != nil {
+			return nil, err
+		}
+
+		// Parse Group JID
+		groupJID, err := WhatsAppCheckJID(jid, gjid)
+		if err != nil {
+			return nil, err
+		}
+
+		// Make Sure WhatsApp ID is Group Server
+		if groupJID.Server != types.GroupServer {
+			return nil, errors.New("WhatsApp Group ID is Not Group Server")
+		}
+
+		// Get Group Info
+		groupInfo, err := WhatsAppClient[jid].GetGroupInfo(context.Background(), groupJID)
+		if err != nil {
+			return nil, err
+		}
+
+		return groupInfo, nil
+	}
+
+	// Return Error WhatsApp Client is not Valid
+	return nil, errors.New("WhatsApp Client is not Valid")
+}
+
 func WhatsAppGroupJoin(jid string, link string) (string, error) {
 	if WhatsAppClient[jid] != nil {
 		var err error
@@ -1363,6 +1397,10 @@ func whatsAppEventHandler(client *whatsmeow.Client, evt interface{}) {
 
 	switch v := evt.(type) {
 	case *events.Message:
+		msg := v.Message
+		if msg == nil || msg.GetProtocolMessage() != nil || msg.GetSenderKeyDistributionMessage() != nil {
+			return
+		}
 		p := buildMessagePayload(client, v)
 		payload = &p
 	case *events.Receipt:

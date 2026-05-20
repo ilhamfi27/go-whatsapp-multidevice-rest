@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"go.mau.fi/whatsmeow"
+	"go.mau.fi/whatsmeow/proto/waE2E"
 	"go.mau.fi/whatsmeow/types"
 	"go.mau.fi/whatsmeow/types/events"
 
@@ -23,23 +24,34 @@ type WebhookPayload struct {
 
 // --- Message Event ---
 
+// WebhookQuotedMessage holds a summary of the message being replied to.
+type WebhookQuotedMessage struct {
+	ID     string `json:"id"`
+	Sender string `json:"sender"`
+	Type   string `json:"type"`
+	Text   string `json:"text,omitempty"`
+}
+
 type WebhookMessageData struct {
-	ID         string    `json:"id"`
-	From       string    `json:"from"`
-	FromName   string    `json:"from_name"`
-	Chat       string    `json:"chat"`
-	Timestamp  time.Time `json:"timestamp"`
-	IsGroup    bool      `json:"is_group"`
-	IsFromMe   bool      `json:"is_from_me"`
-	IsEdit     bool      `json:"is_edit,omitempty"`
-	IsViewOnce bool      `json:"is_view_once,omitempty"`
-	Type       string    `json:"type"`
-	Text       string    `json:"text,omitempty"`
-	MimeType   string    `json:"mime_type,omitempty"`
+	ID           string    `json:"id"`
+	From         string    `json:"from"`
+	FromAlt      string    `json:"from_alt,omitempty"`
+	FromName     string    `json:"from_name"`
+	Chat         string    `json:"chat"`
+	RecipientAlt string    `json:"recipient_alt,omitempty"`
+	Timestamp    time.Time `json:"timestamp"`
+	IsGroup      bool      `json:"is_group"`
+	IsFromMe     bool      `json:"is_from_me"`
+	IsEdit       bool      `json:"is_edit,omitempty"`
+	IsViewOnce   bool      `json:"is_view_once,omitempty"`
+	Type         string    `json:"type"`
+	Text         string    `json:"text,omitempty"`
+	MimeType     string    `json:"mime_type,omitempty"`
 	// Media contains base64-encoded bytes only when MEDIA_STORAGE=none (default).
 	Media string `json:"media,omitempty"`
 	// MediaURL is populated when MEDIA_STORAGE=local or MEDIA_STORAGE=s3.
-	MediaURL string `json:"media_url,omitempty"`
+	MediaURL      string                `json:"media_url,omitempty"`
+	QuotedMessage *WebhookQuotedMessage `json:"quoted_message,omitempty"`
 }
 
 // storeMedia downloads the given message attachment and either saves it via the
@@ -97,12 +109,64 @@ func mimeToExt(mimeType string) string {
 	return ".bin"
 }
 
+// buildQuotedMessage extracts reply context from a contextInfo proto.
+func buildQuotedMessage(ctx *waE2E.ContextInfo) *WebhookQuotedMessage {
+	if ctx == nil {
+		return nil
+	}
+	qID := ctx.GetStanzaID()
+	if qID == "" {
+		return nil
+	}
+	qSender := ctx.GetParticipant()
+	qMsg := ctx.GetQuotedMessage()
+	qType := "unknown"
+	qText := ""
+	if qMsg != nil {
+		switch {
+		case qMsg.GetConversation() != "":
+			qType = "text"
+			qText = qMsg.GetConversation()
+		case qMsg.GetExtendedTextMessage() != nil:
+			qType = "text"
+			qText = qMsg.GetExtendedTextMessage().GetText()
+		case qMsg.GetImageMessage() != nil:
+			qType = "image"
+			qText = qMsg.GetImageMessage().GetCaption()
+		case qMsg.GetVideoMessage() != nil:
+			qType = "video"
+			qText = qMsg.GetVideoMessage().GetCaption()
+		case qMsg.GetAudioMessage() != nil:
+			qType = "audio"
+		case qMsg.GetDocumentMessage() != nil:
+			qType = "document"
+			qText = qMsg.GetDocumentMessage().GetCaption()
+		case qMsg.GetStickerMessage() != nil:
+			qType = "sticker"
+		case qMsg.GetLocationMessage() != nil:
+			qType = "location"
+		case qMsg.GetContactMessage() != nil:
+			qType = "contact"
+		case qMsg.GetReactionMessage() != nil:
+			qType = "reaction"
+			qText = qMsg.GetReactionMessage().GetText()
+		}
+	}
+	return &WebhookQuotedMessage{
+		ID:     qID,
+		Sender: qSender,
+		Type:   qType,
+		Text:   qText,
+	}
+}
+
 func buildMessagePayload(client *whatsmeow.Client, v *events.Message) WebhookPayload {
 	msgType := "unknown"
 	msgText := ""
 	msgMime := ""
 	msgMedia := ""
 	msgMediaURL := ""
+	var msgQuoted *WebhookQuotedMessage
 
 	msg := v.Message
 	if msg != nil {
@@ -113,60 +177,81 @@ func buildMessagePayload(client *whatsmeow.Client, v *events.Message) WebhookPay
 		case msg.GetExtendedTextMessage() != nil:
 			msgType = "text"
 			msgText = msg.GetExtendedTextMessage().GetText()
+			msgQuoted = buildQuotedMessage(msg.GetExtendedTextMessage().GetContextInfo())
 		case msg.GetImageMessage() != nil:
 			msgType = "image"
 			msgText = msg.GetImageMessage().GetCaption()
 			msgMime = msg.GetImageMessage().GetMimetype()
 			msgMedia, msgMediaURL = storeMedia(context.Background(), client, msg.GetImageMessage(), v.Info.ID, msgMime)
+			msgQuoted = buildQuotedMessage(msg.GetImageMessage().GetContextInfo())
 		case msg.GetVideoMessage() != nil:
 			msgType = "video"
 			msgText = msg.GetVideoMessage().GetCaption()
 			msgMime = msg.GetVideoMessage().GetMimetype()
 			msgMedia, msgMediaURL = storeMedia(context.Background(), client, msg.GetVideoMessage(), v.Info.ID, msgMime)
+			msgQuoted = buildQuotedMessage(msg.GetVideoMessage().GetContextInfo())
 		case msg.GetAudioMessage() != nil:
 			msgType = "audio"
 			msgMime = msg.GetAudioMessage().GetMimetype()
 			msgMedia, msgMediaURL = storeMedia(context.Background(), client, msg.GetAudioMessage(), v.Info.ID, msgMime)
+			msgQuoted = buildQuotedMessage(msg.GetAudioMessage().GetContextInfo())
 		case msg.GetDocumentMessage() != nil:
 			msgType = "document"
 			msgText = msg.GetDocumentMessage().GetCaption()
 			msgMime = msg.GetDocumentMessage().GetMimetype()
 			msgMedia, msgMediaURL = storeMedia(context.Background(), client, msg.GetDocumentMessage(), v.Info.ID, msgMime)
+			msgQuoted = buildQuotedMessage(msg.GetDocumentMessage().GetContextInfo())
 		case msg.GetStickerMessage() != nil:
 			msgType = "sticker"
 			msgMime = msg.GetStickerMessage().GetMimetype()
 			msgMedia, msgMediaURL = storeMedia(context.Background(), client, msg.GetStickerMessage(), v.Info.ID, msgMime)
+			msgQuoted = buildQuotedMessage(msg.GetStickerMessage().GetContextInfo())
 		case msg.GetLocationMessage() != nil:
 			msgType = "location"
+			msgQuoted = buildQuotedMessage(msg.GetLocationMessage().GetContextInfo())
 		case msg.GetContactMessage() != nil:
 			msgType = "contact"
+			msgQuoted = buildQuotedMessage(msg.GetContactMessage().GetContextInfo())
 		case msg.GetReactionMessage() != nil:
 			msgType = "reaction"
 			msgText = msg.GetReactionMessage().GetText()
 		case msg.GetPollCreationMessage() != nil:
 			msgType = "poll"
 			msgText = msg.GetPollCreationMessage().GetName()
+			msgQuoted = buildQuotedMessage(msg.GetPollCreationMessage().GetContextInfo())
 		}
+	}
+
+	senderAlt := ""
+	if !v.Info.SenderAlt.IsEmpty() {
+		senderAlt = v.Info.SenderAlt.String()
+	}
+	recipientAlt := ""
+	if !v.Info.RecipientAlt.IsEmpty() {
+		recipientAlt = v.Info.RecipientAlt.String()
 	}
 
 	return WebhookPayload{
 		Event:     "message",
 		Timestamp: time.Now(),
 		Data: WebhookMessageData{
-			ID:         v.Info.ID,
-			From:       v.Info.Sender.String(),
-			FromName:   v.Info.PushName,
-			Chat:       v.Info.Chat.String(),
-			Timestamp:  v.Info.Timestamp,
-			IsGroup:    v.Info.IsGroup,
-			IsFromMe:   v.Info.IsFromMe,
-			IsEdit:     v.IsEdit,
-			IsViewOnce: v.IsViewOnce,
-			Type:       msgType,
-			Text:       msgText,
-			MimeType:   msgMime,
-			Media:      msgMedia,
-			MediaURL:   msgMediaURL,
+			ID:            v.Info.ID,
+			From:          v.Info.Sender.String(),
+			FromAlt:       senderAlt,
+			FromName:      v.Info.PushName,
+			Chat:          v.Info.Chat.String(),
+			RecipientAlt:  recipientAlt,
+			Timestamp:     v.Info.Timestamp,
+			IsGroup:       v.Info.IsGroup,
+			IsFromMe:      v.Info.IsFromMe,
+			IsEdit:        v.IsEdit,
+			IsViewOnce:    v.IsViewOnce,
+			Type:          msgType,
+			Text:          msgText,
+			MimeType:      msgMime,
+			Media:         msgMedia,
+			MediaURL:      msgMediaURL,
+			QuotedMessage: msgQuoted,
 		},
 	}
 }

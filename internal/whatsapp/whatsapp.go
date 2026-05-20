@@ -201,6 +201,32 @@ func GetGroup(c echo.Context) error {
 	return router.ResponseSuccessWithData(c, "Successfully List Joined Groups", group)
 }
 
+// GetGroupInfo
+// @Summary     Get Group Information by Group ID
+// @Description Get Detailed Group Information by Group ID from WhatsApp
+// @Tags        WhatsApp Group
+// @Produce     json
+// @Param       groupId  path  string  true  "Group ID (e.g. 1234567890-1234567890@g.us)"
+// @Success     200
+// @Security    BearerAuth
+// @Router      /group/{groupId} [get]
+func GetGroupInfo(c echo.Context) error {
+	var err error
+	jid := jwtPayload(c).JID
+
+	groupId := strings.TrimSpace(c.Param("groupId"))
+	if len(groupId) == 0 {
+		return router.ResponseBadRequest(c, "Missing Group ID Parameter")
+	}
+
+	groupInfo, err := pkgWhatsApp.WhatsAppGroupGetInfo(jid, groupId)
+	if err != nil {
+		return router.ResponseInternalError(c, err.Error())
+	}
+
+	return router.ResponseSuccessWithData(c, "Successfully Get Group Information", groupInfo)
+}
+
 // JoinGroup
 // @Summary     Join Group From Invitation Link
 // @Description Joining to Group From Invitation Link from WhatsApp
