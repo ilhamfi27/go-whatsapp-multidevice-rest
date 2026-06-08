@@ -770,6 +770,44 @@ func MessageReact(c echo.Context) error {
 	return router.ResponseSuccessWithData(c, "Successfully React Message", resSendMessage)
 }
 
+// SendTyping
+// @Summary     Send Typing / Recording Status
+// @Description Send a composing (typing or recording) or paused chat presence to a WhatsApp Personal ID or Group ID
+// @Tags        WhatsApp Send
+// @Accept      multipart/form-data
+// @Produce     json
+// @Param       msisdn     formData  string  true   "Destination WhatsApp Personal ID or Group ID"
+// @Param       composing  formData  bool    false  "Set to true to start typing, false to stop (default: true)"
+// @Param       audio      formData  bool    false  "Set to true for audio recording indicator, false for text typing (default: false)"
+// @Success     200
+// @Security    BearerAuth
+// @Router      /send/typing [post]
+func SendTyping(c echo.Context) error {
+	var err error
+	jid := jwtPayload(c).JID
+
+	var reqSendTyping typWhatsApp.RequestSendTyping
+	reqSendTyping.RJID = strings.TrimSpace(c.FormValue("msisdn"))
+
+	// Default composing = true when the field is absent or explicitly "true"
+	composingVal := strings.TrimSpace(c.FormValue("composing"))
+	reqSendTyping.IsComposing = composingVal == "" || composingVal == "true"
+
+	audioVal := strings.TrimSpace(c.FormValue("audio"))
+	reqSendTyping.IsAudio = audioVal == "true"
+
+	if len(reqSendTyping.RJID) == 0 {
+		return router.ResponseBadRequest(c, "Missing Form Value MSISDN")
+	}
+
+	err = pkgWhatsApp.WhatsAppSendTyping(jid, reqSendTyping.RJID, reqSendTyping.IsComposing, reqSendTyping.IsAudio)
+	if err != nil {
+		return router.ResponseInternalError(c, err.Error())
+	}
+
+	return router.ResponseSuccess(c, "Successfully Sent Typing Status")
+}
+
 // MessageDelete
 // @Summary     Delete Message
 // @Description Delete Message to Spesific WhatsApp Personal ID or Group ID

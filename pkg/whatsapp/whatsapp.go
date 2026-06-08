@@ -440,6 +440,44 @@ func WhatsAppComposeStatus(jid string, rjid types.JID, isComposing bool, isAudio
 	_ = WhatsAppClient[jid].SendChatPresence(context.Background(), rjid, typeCompose, typeComposeMedia)
 }
 
+// WhatsAppSendTyping sends a composing (typing / recording) or paused chat
+// presence to a personal or group JID.  It is the public counterpart to the
+// internal WhatsAppComposeStatus helper that is normally used only during
+// message-send operations.
+func WhatsAppSendTyping(jid string, rjid string, isComposing bool, isAudio bool) error {
+	if WhatsAppClient[jid] != nil {
+		var err error
+
+		// Make Sure WhatsApp Client is OK
+		err = WhatsAppIsClientOK(jid)
+		if err != nil {
+			return err
+		}
+
+		// Make Sure WhatsApp ID is Registered
+		remoteJID, err := WhatsAppCheckJID(jid, rjid)
+		if err != nil {
+			return err
+		}
+
+		// Mark ourselves as available while the status is active
+		WhatsAppPresence(jid, true)
+
+		// Send composing / paused chat presence
+		WhatsAppComposeStatus(jid, remoteJID, isComposing, isAudio)
+
+		// When clearing the typing indicator, also mark presence as unavailable
+		if !isComposing {
+			WhatsAppPresence(jid, false)
+		}
+
+		return nil
+	}
+
+	// Return Error WhatsApp Client is not Valid
+	return errors.New("WhatsApp Client is not Valid")
+}
+
 func WhatsAppCheckRegistered(jid string, id string) error {
 	if WhatsAppClient[jid] != nil {
 		var err error
